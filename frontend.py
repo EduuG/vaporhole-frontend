@@ -36,7 +36,7 @@ def ascii(subtitulo):
     print_delay(" {}".format(curr_time), breakline=False)
     print_delay("                               Membros: {}".format(exibir_quantidade_membros))
     print_delay("")
-    f = open('/home/eduuG/Scripts/vaporhole_frontend/ascii', 'r')
+    f = open('ascii', 'r')
     content = f.read()
     print_delay(Fore.GREEN + content + Style.RESET_ALL)
     f.close()
@@ -105,7 +105,7 @@ def print_delay(exibir, tempo=0, breakline=True):
         if not breakline:
             print(exibir, end=' ')
             sleep(tempo)
-        
+
         else:
             print(exibir)
             sleep(tempo)
@@ -196,16 +196,16 @@ while True:
     elif resp == 6:
         while True:
             ascii("Sobre")
-            text_file = open("/home/eduuG/Scripts/vaporhole_frontend/sobre", 'r')
+            text_file = open("sobre", 'r')
             data = text_file.read()
             text_file.close()
 
-            sobre = wrap(data, width=50, break_long_words=False,replace_whitespace=False)
+            sobre = wrap(data, width=50, break_long_words=False, replace_whitespace=False)
             for i in sobre:
                 print(i)
 
             print_delay("\n[0] Voltar")
-    
+
             resp = validar_resposta("\nR: ", 0)
 
             if resp == 0:
@@ -214,11 +214,10 @@ while True:
     elif resp == 5:
         while True:
             resp = twtxt()
-            
+
             if resp == 0:
                 break
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")
         break
-
