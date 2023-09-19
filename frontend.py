@@ -167,7 +167,7 @@ def twtxt():
 
 
 separador_tamanho = 60
-tempo_delay = 0.1
+tempo_delay = 0.05
 
 while True:
     curr_time = strftime("%H:%M", localtime())
@@ -175,14 +175,14 @@ while True:
     sleep(tempo_delay)
     print_delay("")
     ascii("O que deseja fazer?")
-    sleep(tempo_delay)
     options = []
 
     add_option("Chat de conversa")
     add_option("Fórum")
     add_option("E-mail")
-    add_option("Browser")
-    add_option("Twtxt", breakline=True)
+    add_option("Browser >")
+    add_option("Twtxt >")
+    add_option("Games >", breakline=True)
     add_option("Sobre")
     add_option("Sair", exit=True)
     show_options()
@@ -198,7 +198,7 @@ while True:
     elif resp == options.index("E-mail"):
         system("mutt")
 
-    elif resp == options.index("Browser"):
+    elif resp == options.index("Browser >"):
         while True:
             ascii("Selecione o browser")
             options = []
@@ -238,13 +238,38 @@ while True:
             if resp == 0:
                 break
 
-    elif resp == options.index("Twtxt"):
+    elif resp == options.index("Twtxt >"):
         while True:
             options = []
             resp = twtxt()
 
             if resp == 0:
                 break
+
+    elif resp == options.index("Games >"):
+        while True:
+            ascii("Games")
+            options = []
+            add_option("Tron")
+            add_option("Wargames")
+            add_option("Telehack")
+            add_option("MudShell")
+            add_option("Voltar", exit=True)
+            show_options()
+
+            resp = validar_resposta("\nR: ")
+
+            if resp == options.index("Tron"):
+                system("tron")
+
+            elif resp == options.index("Wargames"):
+                system("wargames")
+
+            elif resp == options.index("Telehack"):
+                system("telehack")
+
+            elif resp == options.index("MudShell"):
+                system("mudsh")
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")
