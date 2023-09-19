@@ -1,5 +1,4 @@
 # Uma espécie de frontend para o servidor
-# Sou aprendiz em programação, não liguem pra qualidade do código :P
 # By: "eduuG"
 
 from os import system
@@ -9,12 +8,12 @@ from colorama import Fore, Back, Style
 import quantidade_membros
 
 
-def validar_resposta(pergunta, opcoes):
+def validar_resposta(pergunta):
     while True:
         try:
             resp = int(input(pergunta))
 
-            if resp < 0 or resp > opcoes:
+            if resp >= len(options):
                 print_delay("\n- Valor inválido -", 3)
                 continue
             else:
@@ -34,9 +33,9 @@ def validar_resposta(pergunta, opcoes):
 def ascii(subtitulo):
     system("clear")
     print_delay(" {}".format(curr_time), breakline=False)
-    print_delay("                               Membros: {}".format(exibir_quantidade_membros))
+    print_delay("{} Membros: {}".format(' ' * 32, exibir_quantidade_membros))
     print_delay("")
-    f = open('ascii', 'r')
+    f = open('/home/eduuG/Scripts/vaporhole-frontend/ascii', 'r')
     content = f.read()
     print_delay(Fore.GREEN + content + Style.RESET_ALL)
     f.close()
@@ -119,17 +118,37 @@ def print_delay(exibir, tempo=0, breakline=True):
             sleep(tempo_delay)
 
 
+def add_option(option, exit=False, breakline=False):
+    if exit:
+        options.insert(0, option)
+
+    else:
+        if breakline:
+            options.append("{}\n".format(option))
+        else:
+            options.append(option)
+
+
+def show_options():
+    for i in options:
+        if i != "Sair" and i != "Voltar":
+            print_delay("[{}] {}".format(options.index(i), i))
+        if "\n" in i:
+            options[options.index(i)] = i[:-1]
+    print_delay("\n[{}] {}".format('0', options[0]))
+
+
 def twtxt():
     system("clear")
     ascii("Twtxt")
     while True:
-        print_delay("[1] Tweet")
-        print_delay("[2] Exibir tweets mais recentes")
-        print_delay("[3] Quem você está seguindo")
+        add_option("Tweet")
+        add_option("Exibir tweets mais recentes")
+        add_option("Quem você está seguindo")
+        add_option("Voltar", exit=True)
+        show_options()
 
-        print_delay("\n[0] Voltar")
-
-        resp = validar_resposta("\nR: ", 3)
+        resp = validar_resposta("\nR: ")
 
         if resp == 1:
             tweet = input("\nFaça seu tweet: ")
@@ -157,32 +176,37 @@ while True:
     print_delay("")
     ascii("O que deseja fazer?")
     sleep(tempo_delay)
-    print_delay(("[1] Chat de conversa"))
-    print_delay("[2] Fórum")
-    print_delay("[3] E-mail")
-    print_delay("[4] Browser")
-    print_delay("[5] Twtxt")
-    print_delay("\n[6] Sobre")
-    print_delay("\n[0] Sair")
+    options = []
 
-    resp = validar_resposta("\nR: ", 6)
+    add_option("Chat de conversa")
+    add_option("Fórum")
+    add_option("E-mail")
+    add_option("Browser")
+    add_option("Twtxt", breakline=True)
+    add_option("Sobre")
+    add_option("Sair", exit=True)
+    show_options()
 
-    if resp == 1:
+    resp = validar_resposta("\nR: ")
+
+    if resp == options.index("Chat de conversa"):
         system("chat")
 
-    elif resp == 2:
+    elif resp == options.index("Fórum"):
         system("iris")
 
-    elif resp == 3:
+    elif resp == options.index("E-mail"):
         system("mutt")
 
-    elif resp == 4:
+    elif resp == options.index("Browser"):
         while True:
             ascii("Selecione o browser")
-            print_delay("[1] lynx")
-            print_delay("[2] w3m")
-            print_delay("\n[0] Voltar")
-            resp = validar_resposta("\nR: ", 2)
+            options = []
+            add_option("lynx")
+            add_option("w3m")
+            add_option("Voltar", exit=True)
+            show_options()
+            resp = validar_resposta("\nR: ")
 
             if resp == 1:
                 system("lynx")
@@ -193,26 +217,30 @@ while True:
             elif resp == 0:
                 break
 
-    elif resp == 6:
+    elif resp == options.index("Sobre"):
         while True:
             ascii("Sobre")
-            text_file = open("sobre", 'r')
+            text_file = open("/home/eduuG/Scripts/vaporhole-frontend/sobre", 'r')
             data = text_file.read()
             text_file.close()
 
-            sobre = wrap(data, width=50, break_long_words=False, replace_whitespace=False)
+            sobre = wrap(data, width=50, break_long_words=False,
+                         replace_whitespace=False)
             for i in sobre:
                 print(i)
 
-            print_delay("\n[0] Voltar")
+            options = []
+            add_option("Voltar")
+            show_options()
 
-            resp = validar_resposta("\nR: ", 0)
+            resp = validar_resposta("\nR: ")
 
             if resp == 0:
                 break
 
-    elif resp == 5:
+    elif resp == options.index("Twtxt"):
         while True:
+            options = []
             resp = twtxt()
 
             if resp == 0:
