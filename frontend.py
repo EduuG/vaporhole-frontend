@@ -260,16 +260,23 @@ while True:
             resp = validar_resposta("\nR: ")
 
             if resp == options.index("Tron"):
+                system("clear")
                 system("tron")
 
             elif resp == options.index("Wargames"):
+                system("clear")
                 system("wargames")
 
             elif resp == options.index("Telehack"):
+                system("clear")
                 system("telehack")
 
             elif resp == options.index("MudShell"):
+                system("clear")
                 system("mudsh")
+
+            elif resp == 0:
+                break
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")
