@@ -322,6 +322,7 @@ def acessar_web():
         add_option("Pesquisar", breakline=True)
         add_option("Sua página Web")
         add_option("Páginas Web atualizadas recentemente >")
+        add_option("Página Web de outros usuários >")
         add_option("Voltar", exit=True)
         show_options()
 
@@ -352,6 +353,16 @@ def acessar_web():
 
                 if resp == 0:
                     break
+
+        elif resp == options.index("Página Web de outros usuários >"):
+            search_user = input("\nNome do usuário: ")
+
+            if search_user in quantidade_membros.lista():
+                os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+
+            else:
+                print_delay("\n- Usuário desconhecido -\n", 3)
+
 
         elif resp == 0:
             break

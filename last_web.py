@@ -1,5 +1,7 @@
 import requests
-from dependencies.bs4 import BeautifulSoup
+import sys
+sys.path.append('dependencies/')
+from bs4 import BeautifulSoup
 
 
 def show():
