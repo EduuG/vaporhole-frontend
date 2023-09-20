@@ -8,6 +8,7 @@ from textwrap import wrap
 from colorama import Fore, Back, Style
 import quantidade_membros
 import last_gopher
+import last_web
 import sys
 import re
 import importlib
@@ -197,11 +198,12 @@ def settings():
 
 def twtxt():
     while True:
+        global options
+        options = []
+
         os.system("clear")
         ascii("Twtxt")
 
-        global options
-        options = []
         add_option("Tweet")
         add_option("Exibir tweets mais recentes")
         add_option("Quem você está seguindo")
@@ -226,6 +228,43 @@ def twtxt():
         return resp
 
 
+def games():
+    while True:
+        global options
+        options = []
+
+        os.system("clear")
+        ascii("Games")
+
+        add_option("Tron")
+        add_option("Wargames")
+        add_option("Telehack")
+        add_option("MudShell")
+        add_option("Voltar", exit=True)
+        show_options()
+
+        resp = validar_resposta("\nR: ")
+
+        if resp == options.index("Tron"):
+            os.system("clear")
+            os.system("tron")
+
+        elif resp == options.index("Wargames"):
+            os.system("clear")
+            os.system("wargames")
+
+        elif resp == options.index("Telehack"):
+            os.system("clear")
+            os.system("telehack")
+
+        elif resp == options.index("MudShell"):
+            os.system("clear")
+            os.system("mudsh")
+
+        elif resp == 0:
+            break
+
+
 def acessar_gopher():
     while True:
         global options
@@ -233,7 +272,7 @@ def acessar_gopher():
         ascii("Acessar Gopher")
         add_option("Seu Gopher Hole")
         add_option("Gopher Holes atualizados recentemente >")
-        add_option("Gopher Holes de outros usuários >")
+        add_option("Gopher Hole de outros usuários >")
         add_option("Voltar", exit=True)
         show_options()
 
@@ -241,12 +280,7 @@ def acessar_gopher():
 
         if resp == options.index("Seu Gopher Hole"):
             os.system("clear")
-
-            if user_settings.DEFAULT_BROWSER == 'lynx':
-                os.system("lynx gopher://vaporhole.xyz/1/~{}".format(user))
-
-            elif user_settings.DEFAULT_BROWSER == 'w3m':
-                os.system("w3m gopher://vaporhole.xyz/1/~{}".format(user))
+            os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, user))
 
         elif resp == options.index("Gopher Holes atualizados recentemente >"):
             while True:
@@ -263,6 +297,58 @@ def acessar_gopher():
                 for users in options:
                     if resp == options.index(users) and resp != 0:
                         os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, users))
+
+                if resp == 0:
+                    break
+        
+        elif resp == options.index("Gopher Hole de outros usuários >"):
+            search_user = input("\nNome do usuário: ")
+
+            if search_user in quantidade_membros.lista():
+                os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+
+            else:
+                print_delay("\n- Usuário desconhecido -\n", 3)
+
+        elif resp == 0:
+            break
+
+
+def acessar_web():
+    while True:
+        global options
+        options = []
+        ascii("Acessar Web")
+        add_option("Pesquisar", breakline=True)
+        add_option("Sua página Web")
+        add_option("Páginas Web atualizadas recentemente >")
+        add_option("Voltar", exit=True)
+        show_options()
+
+        resp = validar_resposta("\nR: ")
+
+        if resp == options.index("Pesquisar"):
+            os.system("{} duckduckgo.com".format(user_settings.DEFAULT_BROWSER))
+
+        elif resp == options.index("Sua página Web"):
+            os.system("clear")
+            os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, user))
+
+        elif resp == options.index("Páginas Web atualizadas recentemente >"):
+            while True:
+                ascii("Páginas Web atualizadas")
+                options = []
+                web_list = last_web.show()
+                for users in web_list:
+                    add_option(users)
+                add_option("Voltar", exit=True)
+                show_options()
+
+                resp = validar_resposta("\nR: ")
+
+                for users in options:
+                    if resp == options.index(users) and resp != 0:
+                        os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, users))
 
                 if resp == 0:
                     break
@@ -303,7 +389,6 @@ while True:
     add_option("Chat de conversa")
     add_option("Fórum")
     add_option("E-mail")
-    add_option("Browser >")
     add_option("Twtxt >")
     add_option("Games >", breakline=True)
     add_option("Acessar Gopher >")
@@ -323,25 +408,6 @@ while True:
 
     elif resp == options.index("E-mail"):
         os.system("mutt")
-
-    elif resp == options.index("Browser >"):
-        while True:
-            ascii("Selecione o browser")
-            options = []
-            add_option("lynx")
-            add_option("w3m")
-            add_option("Voltar", exit=True)
-            show_options()
-            resp = validar_resposta("\nR: ")
-
-            if resp == 1:
-                os.system("lynx")
-
-            elif resp == 2:
-                os.system("w3m duckduckgo.com")
-
-            elif resp == 0:
-                break
 
     elif resp == options.index("Sobre"):
         while True:
@@ -372,42 +438,16 @@ while True:
                 break
 
     elif resp == options.index("Games >"):
-        while True:
-            ascii("Games")
-            options = []
-            add_option("Tron")
-            add_option("Wargames")
-            add_option("Telehack")
-            add_option("MudShell")
-            add_option("Voltar", exit=True)
-            show_options()
-
-            resp = validar_resposta("\nR: ")
-
-            if resp == options.index("Tron"):
-                os.system("clear")
-                os.system("tron")
-
-            elif resp == options.index("Wargames"):
-                os.system("clear")
-                os.system("wargames")
-
-            elif resp == options.index("Telehack"):
-                os.system("clear")
-                os.system("telehack")
-
-            elif resp == options.index("MudShell"):
-                os.system("clear")
-                os.system("mudsh")
-
-            elif resp == 0:
-                break
+        games()
 
     elif resp == options.index("Opções >"):
         settings()
 
     elif resp == options.index("Acessar Gopher >"):
         acessar_gopher()
+
+    elif resp == options.index("Acessar Web >"):
+        acessar_web()
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")

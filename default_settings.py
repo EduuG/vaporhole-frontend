@@ -1,1 +1,1 @@
-DEFAULT_BROWSER = ''
+DEFAULT_BROWSER = 'lynx'
