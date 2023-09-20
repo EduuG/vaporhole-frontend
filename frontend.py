@@ -1,11 +1,14 @@
 # Uma espécie de frontend para o servidor
 # By: "eduuG"
 
-from os import system
+import os
+from getpass import getuser
 from time import sleep, strftime, localtime
 from textwrap import wrap
 from colorama import Fore, Back, Style
 import quantidade_membros
+import sys
+
 
 
 def validar_resposta(pergunta):
@@ -31,11 +34,11 @@ def validar_resposta(pergunta):
 
 
 def ascii(subtitulo):
-    system("clear")
+    os.system("clear")
     print_delay(" {}".format(curr_time), breakline=False)
     print_delay("{} Membros: {}".format(' ' * 32, exibir_quantidade_membros))
     print_delay("")
-    f = open('/home/eduuG/Scripts/vaporhole-frontend/ascii', 'r')
+    f = open('ascii', 'r')
     content = f.read()
     print_delay(Fore.GREEN + content + Style.RESET_ALL)
     f.close()
@@ -138,8 +141,48 @@ def show_options():
     print_delay("\n[{}] {}".format('0', options[0]))
 
 
+def settings():
+    while True:
+        global options
+        options = []
+        ascii("Opções")
+        if user_settings.DEFAULT_BROWSER == '':
+            add_option("Browser principal: DEFINIR")
+        else:
+            add_option("Browser principal: {}".format(user_settings.DEFAULT_BROWSER))
+        add_option("Voltar", exit=True)
+        show_options()
+
+        resp = validar_resposta("\nR: ")
+
+        
+        if resp == options.index("Browser principal")
+            while True:
+                options = []
+                separador("Definir browser principal")
+                add_option("lynx")
+                add_option("w3m")
+                add_option("Voltar", exit=True)
+                show_options()
+
+                resp = validar_resposta("\nR: ")
+
+                if resp == options.index("lynx"):
+                    user_settings.DEFAULT_BROWSER = 'lynx'
+                    with open(settings_path, 'r+') as file:
+                        for line in file:
+                            if "DEFAULT_BROWSER" in line:
+                                line = "DEFAULT_BROWSER = 'lynx"
+
+                elif resp == 0:
+                    break
+
+        elif resp == 0:
+            break
+
+
 def twtxt():
-    system("clear")
+    os.system("clear")
     ascii("Twtxt")
     while True:
         add_option("Tweet")
@@ -152,27 +195,56 @@ def twtxt():
 
         if resp == 1:
             tweet = input("\nFaça seu tweet: ")
-            system("twtxt tweet '{}'".format(tweet))
+            os.system("twtxt tweet '{}'".format(tweet))
             print_delay("\nTweet realizado com sucesso!")
             sleep(3)
             continue
 
         elif resp == 2:
-            system("twtxt timeline | less")
+            os.system("twtxt timeline | less")
 
         elif resp == 3:
-            system("twtxt following | cut -d '>' -f2 | cut -d ' ' -f2 | less")
+            os.system("twtxt following | cut -d '>' -f2 | cut -d ' ' -f2 | less")
 
         return resp
 
 
+def acessar_gopher():
+    while True:
+        ascii("Acessar Gopher")
+        add_option("Seu Gopherhole")
+        add_option("Gopherhole de outros usuários >")
+        add_option("Voltar", exit=True)
+        show_options()
+
+        resp = validar_resposta("\nR: ")
+
+        if resp == options.index("Seu Gopherhole"):
+            pass
+
+
 separador_tamanho = 60
 tempo_delay = 0.05
+options = []
+user = getuser()
+settings_path = "/home/{}/Frontend/user_settings.py".format(user)
 
 while True:
+    if 'Frontend' in os.listdir("/home/{}/".format(user)):
+        pass
+    else:
+        os.mkdir("/home/{}/Frontend".format(user))
+        os.mknod("/home/{}/Frontend/user_settings.py".format(user))
+
+        with open('default_settings.py', 'r') as file1, open(settings_path, 'a') as file2:
+            for line in file1:
+                file2.write(line)
+
+    sys.path.insert(1, "/home/{}/Frontend".format(user))
+    import user_settings
+
     curr_time = strftime("%H:%M", localtime())
     exibir_quantidade_membros = quantidade_membros.exibir()
-    sleep(tempo_delay)
     print_delay("")
     ascii("O que deseja fazer?")
     options = []
@@ -183,6 +255,9 @@ while True:
     add_option("Browser >")
     add_option("Twtxt >")
     add_option("Games >", breakline=True)
+    add_option("Acessar Gopher >")
+    add_option("Acessar Web >", breakline=True)
+    add_option("Opções >")
     add_option("Sobre")
     add_option("Sair", exit=True)
     show_options()
@@ -190,13 +265,13 @@ while True:
     resp = validar_resposta("\nR: ")
 
     if resp == options.index("Chat de conversa"):
-        system("chat")
+        os.system("chat")
 
     elif resp == options.index("Fórum"):
-        system("iris")
+        os.system("iris")
 
     elif resp == options.index("E-mail"):
-        system("mutt")
+        os.system("mutt")
 
     elif resp == options.index("Browser >"):
         while True:
@@ -209,10 +284,10 @@ while True:
             resp = validar_resposta("\nR: ")
 
             if resp == 1:
-                system("lynx")
+                os.system("lynx")
 
             elif resp == 2:
-                system("w3m duckduckgo.com")
+                os.system("w3m duckduckgo.com")
 
             elif resp == 0:
                 break
@@ -220,7 +295,7 @@ while True:
     elif resp == options.index("Sobre"):
         while True:
             ascii("Sobre")
-            text_file = open("/home/eduuG/Scripts/vaporhole-frontend/sobre", 'r')
+            text_file = open("sobre", 'r')
             data = text_file.read()
             text_file.close()
 
@@ -260,23 +335,26 @@ while True:
             resp = validar_resposta("\nR: ")
 
             if resp == options.index("Tron"):
-                system("clear")
-                system("tron")
+                os.system("clear")
+                os.system("tron")
 
             elif resp == options.index("Wargames"):
-                system("clear")
-                system("wargames")
+                os.system("clear")
+                os.system("wargames")
 
             elif resp == options.index("Telehack"):
-                system("clear")
-                system("telehack")
+                os.system("clear")
+                os.system("telehack")
 
             elif resp == options.index("MudShell"):
-                system("clear")
-                system("mudsh")
+                os.system("clear")
+                os.system("mudsh")
 
             elif resp == 0:
                 break
+
+    elif resp == options.index("Opções >"):
+        settings()
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")
