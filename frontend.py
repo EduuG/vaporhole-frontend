@@ -240,6 +240,7 @@ def games():
         add_option("Wargames")
         add_option("Telehack")
         add_option("MudShell")
+        add_option("Jogo da Velha (By Al4xs)")
         add_option("Voltar", exit=True)
         show_options()
 
@@ -260,6 +261,9 @@ def games():
         elif resp == options.index("MudShell"):
             os.system("clear")
             os.system("mudsh")
+
+        elif resp == options.index("Jogo da Velha"):
+            os.system("jogo-da-velha.py")
 
         elif resp == 0:
             break
