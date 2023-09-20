@@ -262,7 +262,7 @@ def games():
             os.system("clear")
             os.system("mudsh")
 
-        elif resp == options.index("Jogo da Velha"):
+        elif resp == options.index("Jogo da Velha (By Al4xs)"):
             os.system("jogo-da-velha.py")
 
         elif resp == 0:
