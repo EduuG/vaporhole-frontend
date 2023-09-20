@@ -7,8 +7,10 @@ from time import sleep, strftime, localtime
 from textwrap import wrap
 from colorama import Fore, Back, Style
 import quantidade_membros
+import last_gopher
 import sys
-
+import re
+import importlib
 
 
 def validar_resposta(pergunta):
@@ -56,8 +58,8 @@ def realce(titulo):
 
 # Função que permite criar separadores de maneira dinâmica,
 # alterando seu tamanho, se deve conter um título ou não,
-# e também sua aparência (se usará "-" ou "+").
-def separador(titulo='', limite=0, tipo=0):
+# e também sua aparência.
+def separador(titulo='', limite=0, tipo='-'):
     if titulo:
         titulo = ("{}{}{}".format(' ', titulo, ' '))
         titulo_original = titulo
@@ -68,7 +70,7 @@ def separador(titulo='', limite=0, tipo=0):
         if not limite:
             i = 0
             while len(titulo) < separador_tamanho:
-                titulo = ("{}{}{}".format('-' * i, titulo_original, '-' * i))
+                titulo = ("{}{}{}".format(tipo * i, titulo_original, tipo * i))
                 i += 1
 
             if len(titulo) == (separador_tamanho + 1):
@@ -78,7 +80,7 @@ def separador(titulo='', limite=0, tipo=0):
         else:
             i = 0
             while len(titulo) < limite:
-                titulo = ("{}{}{}".format('-' * i, titulo, '-' * i))
+                titulo = ("{}{}{}".format(tipo * i, titulo, tipo * i))
                 i += 1
 
             if len(titulo) == (limite + 1):
@@ -86,17 +88,10 @@ def separador(titulo='', limite=0, tipo=0):
 
         print_delay(titulo)
     else:
-        # Se o tipo não for informado, ele usará a aparência padrão de "-".
-        if not tipo:
-            if not limite:
-                print_delay('-' * separador_tamanho)
-            else:
-                print_delay('-' * limite)
-        elif tipo == 1:
-            if not limite:
-                print_delay('+' * separador_tamanho)
-            else:
-                print_delay('+' * limite)
+        if not limite:
+            print_delay(tipo * separador_tamanho)
+        else:
+            print_delay(tipo * limite)
 
 
 # Função para tornar a exibição do programa menos abrupta.
@@ -141,25 +136,43 @@ def show_options():
     print_delay("\n[{}] {}".format('0', options[0]))
 
 
+def config(variable, value):
+    replace = "{} = '{}'".format(variable, value)
+
+    with open(r'{}'.format(config_path), 'r') as file:
+        data = file.read()
+        search = re.findall("{} = '{}'".format(variable, '.*?'), data)
+        for match in search:
+            data = data.replace(match, replace)
+
+    with open(r'{}'.format(config_path), 'w') as file:
+        file.write(data)
+
+
 def settings():
     while True:
+        importlib.reload(user_settings)
         global options
         options = []
         ascii("Opções")
         if user_settings.DEFAULT_BROWSER == '':
-            add_option("Browser principal: DEFINIR")
+            add_option("Browser padrão: DEFINIR")
         else:
-            add_option("Browser principal: {}".format(user_settings.DEFAULT_BROWSER))
+            add_option("Browser padrão: {}".format(user_settings.DEFAULT_BROWSER))
         add_option("Voltar", exit=True)
         show_options()
 
         resp = validar_resposta("\nR: ")
 
-        
-        if resp == options.index("Browser principal")
+        if (options[resp] == "Browser padrão: DEFINIR" or
+           options[resp] == "Browser padrão: {}".format
+           (user_settings.DEFAULT_BROWSER)):
+
             while True:
                 options = []
-                separador("Definir browser principal")
+                print_delay("")
+                separador(Fore.GREEN + "Definir browser padrão" + Style.RESET_ALL, tipo='+')
+                print_delay("")
                 add_option("lynx")
                 add_option("w3m")
                 add_option("Voltar", exit=True)
@@ -168,11 +181,12 @@ def settings():
                 resp = validar_resposta("\nR: ")
 
                 if resp == options.index("lynx"):
-                    user_settings.DEFAULT_BROWSER = 'lynx'
-                    with open(settings_path, 'r+') as file:
-                        for line in file:
-                            if "DEFAULT_BROWSER" in line:
-                                line = "DEFAULT_BROWSER = 'lynx"
+                    config("DEFAULT_BROWSER", 'lynx')
+                    break
+
+                elif resp == options.index("w3m"):
+                    config("DEFAULT_BROWSER", 'w3m')
+                    break
 
                 elif resp == 0:
                     break
@@ -182,9 +196,12 @@ def settings():
 
 
 def twtxt():
-    os.system("clear")
-    ascii("Twtxt")
     while True:
+        os.system("clear")
+        ascii("Twtxt")
+
+        global options
+        options = []
         add_option("Tweet")
         add_option("Exibir tweets mais recentes")
         add_option("Quem você está seguindo")
@@ -193,17 +210,17 @@ def twtxt():
 
         resp = validar_resposta("\nR: ")
 
-        if resp == 1:
+        if resp == options.index("Tweet"):
             tweet = input("\nFaça seu tweet: ")
             os.system("twtxt tweet '{}'".format(tweet))
             print_delay("\nTweet realizado com sucesso!")
             sleep(3)
             continue
 
-        elif resp == 2:
+        elif resp == options.index("Exibir tweets mais recentes"):
             os.system("twtxt timeline | less")
 
-        elif resp == 3:
+        elif resp == options.index("Quem você está seguindo"):
             os.system("twtxt following | cut -d '>' -f2 | cut -d ' ' -f2 | less")
 
         return resp
@@ -211,23 +228,54 @@ def twtxt():
 
 def acessar_gopher():
     while True:
+        global options
+        options = []
         ascii("Acessar Gopher")
-        add_option("Seu Gopherhole")
-        add_option("Gopherhole de outros usuários >")
+        add_option("Seu Gopher Hole")
+        add_option("Gopher Holes atualizados recentemente >")
+        add_option("Gopher Holes de outros usuários >")
         add_option("Voltar", exit=True)
         show_options()
 
         resp = validar_resposta("\nR: ")
 
-        if resp == options.index("Seu Gopherhole"):
-            pass
+        if resp == options.index("Seu Gopher Hole"):
+            os.system("clear")
+
+            if user_settings.DEFAULT_BROWSER == 'lynx':
+                os.system("lynx gopher://vaporhole.xyz/1/~{}".format(user))
+
+            elif user_settings.DEFAULT_BROWSER == 'w3m':
+                os.system("w3m gopher://vaporhole.xyz/1/~{}".format(user))
+
+        elif resp == options.index("Gopher Holes atualizados recentemente >"):
+            while True:
+                ascii("Gopher Holes atualizados")
+                options = []
+                gopher_list = last_gopher.show()
+                for users in gopher_list:
+                    add_option(users)
+                add_option("Voltar", exit=True)
+                show_options()
+
+                resp = validar_resposta("\nR: ")
+
+                for users in options:
+                    if resp == options.index(users) and resp != 0:
+                        os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, users))
+
+                if resp == 0:
+                    break
+
+        elif resp == 0:
+            break
 
 
 separador_tamanho = 60
 tempo_delay = 0.05
 options = []
 user = getuser()
-settings_path = "/home/{}/Frontend/user_settings.py".format(user)
+config_path = "/home/{}/Frontend/user_settings.py".format(user)
 
 while True:
     if 'Frontend' in os.listdir("/home/{}/".format(user)):
@@ -236,12 +284,15 @@ while True:
         os.mkdir("/home/{}/Frontend".format(user))
         os.mknod("/home/{}/Frontend/user_settings.py".format(user))
 
-        with open('default_settings.py', 'r') as file1, open(settings_path, 'a') as file2:
+        with (open('default_settings.py', 'r') as file1,
+              open(config_path, 'a') as file2):
+
             for line in file1:
                 file2.write(line)
 
     sys.path.insert(1, "/home/{}/Frontend".format(user))
     import user_settings
+    importlib.reload(user_settings)
 
     curr_time = strftime("%H:%M", localtime())
     exibir_quantidade_membros = quantidade_membros.exibir()
@@ -315,7 +366,6 @@ while True:
 
     elif resp == options.index("Twtxt >"):
         while True:
-            options = []
             resp = twtxt()
 
             if resp == 0:
@@ -355,6 +405,9 @@ while True:
 
     elif resp == options.index("Opções >"):
         settings()
+
+    elif resp == options.index("Acessar Gopher >"):
+        acessar_gopher()
 
     elif resp == 0:
         print_delay("\n- Até mais! -\n")
