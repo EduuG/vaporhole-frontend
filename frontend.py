@@ -241,6 +241,7 @@ def games():
         add_option("Telehack")
         add_option("MudShell")
         add_option("Jogo da Velha (By Al4xs)")
+        add_option("Cataclysm: Dark Days Ahead")
         add_option("Voltar", exit=True)
         show_options()
 
@@ -264,6 +265,9 @@ def games():
 
         elif resp == options.index("Jogo da Velha (By Al4xs)"):
             os.system("jogo-da-velha.py")
+
+        elif resp == options.index("Cataclysm: Dark Days Ahead"):
+            os.system("/home/eduuG/Games/cataclysmdda-0.F/cataclysm-launcher")
 
         elif resp == 0:
             break
