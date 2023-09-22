@@ -1,15 +1,17 @@
-# Uma espécie de frontend para o servidor
+#!/bin/python
+# Um frontend para o VaporHole
 # By: "eduuG"
 
+import sys
 import os
 from getpass import getuser
 from time import sleep, strftime, localtime
 from textwrap import wrap
 from colorama import Fore, Back, Style
+from dependencies.simple_term_menu.simple_term_menu import TerminalMenu
 import quantidade_membros
 import last_gopher
 import last_web
-import sys
 import re
 import importlib
 
@@ -118,23 +120,35 @@ def print_delay(exibir, tempo=0, breakline=True):
 
 
 def add_option(option, exit=False, breakline=False):
+    raw_options = []
+
+    for i in options:
+        if i != "":
+            raw_options.append(i)
+
     if exit:
-        options.insert(0, option)
+        if len(raw_options) > 1:
+            options.append("")
+
+        options.append("[0] " + option)
 
     else:
-        if breakline:
-            options.append("{}\n".format(option))
-        else:
-            options.append(option)
+        if option != "":
+            if not breakline:
+                options.append("[{}] {}".format((len(raw_options) + 1), option))
+            else:
+                options.append("")
+                options.append("[{}] {}".format((len(raw_options) + 1), option))
 
 
 def show_options():
+    terminal_menu = TerminalMenu(options, skip_empty_entries=True)
+    resp = terminal_menu.show()
+
     for i in options:
-        if i != "Sair" and i != "Voltar":
-            print_delay("[{}] {}".format(options.index(i), i))
-        if "\n" in i:
-            options[options.index(i)] = i[:-1]
-    print_delay("\n[{}] {}".format('0', options[0]))
+        options[options.index(i)] = i[4:]
+
+    return resp
 
 
 def config(variable, value):
@@ -161,9 +175,7 @@ def settings():
         else:
             add_option("Browser padrão: {}".format(user_settings.DEFAULT_BROWSER))
         add_option("Voltar", exit=True)
-        show_options()
-
-        resp = validar_resposta("\nR: ")
+        resp = show_options()
 
         if (options[resp] == "Browser padrão: DEFINIR" or
            options[resp] == "Browser padrão: {}".format
@@ -327,14 +339,17 @@ def acessar_web():
         global options
         options = []
         ascii("Acessar Web")
-        add_option("Pesquisar", breakline=True)
-        add_option("Sua página Web")
+        add_option("Pesquisar")
+        add_option("Sua página Web", breakline=True)
         add_option("Páginas Web atualizadas recentemente >")
         add_option("Página Web de outros usuários >")
         add_option("Voltar", exit=True)
-        show_options()
 
-        resp = validar_resposta("\nR: ")
+        terminal_menu = TerminalMenu(options, skip_empty_entries=True)
+        resp = terminal_menu.show()
+
+        for i in options:
+            options[options.index(i)] = i[4:]
 
         if resp == options.index("Pesquisar"):
             os.system("{} duckduckgo.com".format(user_settings.DEFAULT_BROWSER))
@@ -371,8 +386,7 @@ def acessar_web():
             else:
                 print_delay("\n- Usuário desconhecido -\n", 3)
 
-
-        elif resp == 0:
+        elif resp == options.index("Voltar"):
             break
 
 
@@ -409,15 +423,14 @@ while True:
     add_option("Fórum")
     add_option("E-mail")
     add_option("Twtxt >")
-    add_option("Games >", breakline=True)
-    add_option("Acessar Gopher >")
-    add_option("Acessar Web >", breakline=True)
-    add_option("Opções >")
+    add_option("Games >")
+    add_option("Acessar Gopher >", breakline=True)
+    add_option("Acessar Web >")
+    add_option("Opções >", breakline=True)
     add_option("Sobre")
     add_option("Sair", exit=True)
-    show_options()
 
-    resp = validar_resposta("\nR: ")
+    resp = show_options()
 
     if resp == options.index("Chat de conversa"):
         os.system("chat")
@@ -440,11 +453,11 @@ while True:
             for i in sobre:
                 print(i)
 
+            print_delay("")
             options = []
-            add_option("Voltar")
-            show_options()
+            add_option("Voltar", exit=True)
 
-            resp = validar_resposta("\nR: ")
+            resp = show_options()
 
             if resp == 0:
                 break
@@ -468,6 +481,6 @@ while True:
     elif resp == options.index("Acessar Web >"):
         acessar_web()
 
-    elif resp == 0:
+    elif resp == options.index("Sair"):
         print_delay("\n- Até mais! -\n")
         break
