@@ -263,10 +263,17 @@ def twtxt():
         resp = show_options(subtitulo)
 
         if resp == options.index("Tweet"):
-            tweet = input("\nFaça seu tweet: ")
-            os.system("twtxt tweet '{}'".format(tweet))
-            print_delay("\nTweet realizado com sucesso!")
-            sleep(3)
+            print("* Ctrl-C para voltar")
+
+            try:
+                tweet = input("\nFaça seu tweet: ")
+                os.system("twtxt tweet '{}'".format(tweet))
+                print_delay("\nTweet realizado com sucesso!")
+                sleep(3)
+
+            except KeyboardInterrupt:
+                continue
+
             continue
 
         elif resp == options.index("Exibir tweets mais recentes"):
