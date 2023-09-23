@@ -40,7 +40,7 @@ def validar_resposta(pergunta):
 
 def ascii(subtitulo, animation=False):
     os.system("clear")
-    f = open('/home/eduuG/Scripts/vaporhole-frontend/ascii', 'r')
+    f = open('ascii', 'r')
 
     if animation:
         print_delay(" {}".format(curr_time), breakline=False)
@@ -487,7 +487,7 @@ while True:
     elif resp == options.index("Sobre"):
         while True:
             subtitulo = ascii("Sobre")
-            text_file = open("/home/eduuG/Scripts/vaporhole-frontend/sobre", 'r')
+            text_file = open("sobre", 'r')
             data = text_file.read()
             text_file.close()
 
