@@ -1,0 +1,13 @@
+.*
+!.editorconfig
+!.github
+!.gitignore
+!.gitlab-ci.yml
+!.markdownlint.yaml
+!.pre-commit-config.yaml
+*.pyc
+__pycache__/
+build/
+dist/
+*.egg-info/
+*.spec
