@@ -1593,6 +1593,7 @@ class TerminalMenu:
             if self._raise_error_on_interrupt:
                 raise e
             menu_was_interrupted = True
+            exit()
         finally:
             reset_signal_handling()
             self._clear_menu()
