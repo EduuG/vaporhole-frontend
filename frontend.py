@@ -38,18 +38,37 @@ def validar_resposta(pergunta):
     return resp
 
 
-def ascii(subtitulo):
+def ascii(subtitulo, animation=False):
     os.system("clear")
-    print_delay(" {}".format(curr_time), breakline=False)
-    print_delay("{} Membros: {}".format(' ' * 32, exibir_quantidade_membros))
-    print_delay("")
     f = open('ascii', 'r')
-    content = f.read()
-    print_delay(Fore.GREEN + content + Style.RESET_ALL)
+
+    if animation:
+        print_delay(" {}".format(curr_time), breakline=False)
+        print_delay("{} Membros: {}".format(' ' * 33, exibir_quantidade_membros))
+        print_delay("")
+
+        content = f.readlines()
+        for line in content:
+            print_delay(Fore.GREEN + line + Style.RESET_ALL, breakline=False)
+
+        print_delay("")
+        separador(Fore.BLUE + subtitulo + Style.RESET_ALL)
+        print_delay("")
+
+    else:
+        print(" {}".format(curr_time), end=' ')
+        print("{} Membros: {}".format(' ' * 32, exibir_quantidade_membros))
+        print("")
+
+        content = f.read()
+        print(Fore.GREEN + content + Style.RESET_ALL)
+
+        separador(Fore.BLUE + subtitulo + Style.RESET_ALL)
+        print("")
+
     f.close()
 
-    separador(Fore.BLUE + subtitulo + Style.RESET_ALL)
-    print_delay("")
+    return subtitulo
 
 
 # Função para realçar a apresentação do programa
@@ -103,7 +122,7 @@ def separador(titulo='', limite=0, tipo='-'):
 def print_delay(exibir, tempo=0, breakline=True):
     if tempo:
         if not breakline:
-            print(exibir, end=' ')
+            print(exibir, end='')
             sleep(tempo)
 
         else:
@@ -111,7 +130,7 @@ def print_delay(exibir, tempo=0, breakline=True):
             sleep(tempo)
     else:
         if not breakline:
-            print(exibir, end=' ')
+            print(exibir, end='')
             sleep(tempo_delay)
 
         else:
@@ -127,26 +146,38 @@ def add_option(option, exit=False, breakline=False):
             raw_options.append(i)
 
     if exit:
-        if len(raw_options) > 1:
+        if len(raw_options) >= 1:
             options.append("")
 
-        options.append("[0] " + option)
+        options.append('# ' + option)
 
     else:
         if option != "":
             if not breakline:
-                options.append("[{}] {}".format((len(raw_options) + 1), option))
+                options.append('• ' + option)
             else:
                 options.append("")
-                options.append("[{}] {}".format((len(raw_options) + 1), option))
+                options.append('• ' + option)
 
 
-def show_options():
-    terminal_menu = TerminalMenu(options, skip_empty_entries=True)
+def show_options(subtitulo=''):
+    raw_options = []
+
+    for i in options:
+        if i != "":
+            raw_options.append(i)
+
+    if len(raw_options) > 5:
+        for i in options:
+            print_delay("  " + i)
+
+        ascii(subtitulo)
+
+    terminal_menu = TerminalMenu(options, skip_empty_entries=True, menu_cursor_style=("fg_purple", "bold"))
     resp = terminal_menu.show()
 
     for i in options:
-        options[options.index(i)] = i[4:]
+        options[options.index(i)] = i[2:]
 
     return resp
 
@@ -169,17 +200,26 @@ def settings():
         importlib.reload(user_settings)
         global options
         options = []
-        ascii("Opções")
+        subtitulo = ascii("Opções")
         if user_settings.DEFAULT_BROWSER == '':
             add_option("Browser padrão: DEFINIR")
         else:
             add_option("Browser padrão: {}".format(user_settings.DEFAULT_BROWSER))
         add_option("Voltar", exit=True)
-        resp = show_options()
+
+        resp = show_options(subtitulo)
 
         if (options[resp] == "Browser padrão: DEFINIR" or
            options[resp] == "Browser padrão: {}".format
            (user_settings.DEFAULT_BROWSER)):
+
+            for i in options:
+                if i != "" and i != "Voltar":
+                    print_delay("  * {}".format(i))
+
+                elif i == "Voltar":
+                    print_delay("")
+                    print_delay("  * Voltar")
 
             while True:
                 options = []
@@ -189,9 +229,8 @@ def settings():
                 add_option("lynx")
                 add_option("w3m")
                 add_option("Voltar", exit=True)
-                show_options()
 
-                resp = validar_resposta("\nR: ")
+                resp = show_options()
 
                 if resp == options.index("lynx"):
                     config("DEFAULT_BROWSER", 'lynx')
@@ -201,10 +240,10 @@ def settings():
                     config("DEFAULT_BROWSER", 'w3m')
                     break
 
-                elif resp == 0:
+                elif resp == options.index("Voltar"):
                     break
 
-        elif resp == 0:
+        elif resp == options.index("Voltar"):
             break
 
 
@@ -214,15 +253,14 @@ def twtxt():
         options = []
 
         os.system("clear")
-        ascii("Twtxt")
+        subtitulo = ascii("Twtxt")
 
         add_option("Tweet")
         add_option("Exibir tweets mais recentes")
         add_option("Quem você está seguindo")
         add_option("Voltar", exit=True)
-        show_options()
 
-        resp = validar_resposta("\nR: ")
+        resp = show_options(subtitulo)
 
         if resp == options.index("Tweet"):
             tweet = input("\nFaça seu tweet: ")
@@ -246,7 +284,7 @@ def games():
         options = []
 
         os.system("clear")
-        ascii("Games")
+        subtitulo = ascii("Games")
 
         add_option("Tron")
         add_option("Wargames")
@@ -255,9 +293,8 @@ def games():
         add_option("Jogo da Velha (By Al4xs)")
         add_option("Cataclysm: Dark Days Ahead")
         add_option("Voltar", exit=True)
-        show_options()
 
-        resp = validar_resposta("\nR: ")
+        resp = show_options(subtitulo)
 
         if resp == options.index("Tron"):
             os.system("clear")
@@ -281,7 +318,7 @@ def games():
         elif resp == options.index("Cataclysm: Dark Days Ahead"):
             os.system("/home/eduuG/Games/cataclysmdda-0.F/cataclysm-launcher")
 
-        elif resp == 0:
+        elif resp == options.index("Voltar"):
             break
 
 
@@ -289,14 +326,13 @@ def acessar_gopher():
     while True:
         global options
         options = []
-        ascii("Acessar Gopher")
+        subtitulo = ascii("Acessar Gopher")
         add_option("Seu Gopher Hole")
         add_option("Gopher Holes atualizados recentemente >")
         add_option("Gopher Hole de outros usuários >")
         add_option("Voltar", exit=True)
-        show_options()
 
-        resp = validar_resposta("\nR: ")
+        resp = show_options(subtitulo)
 
         if resp == options.index("Seu Gopher Hole"):
             os.system("clear")
@@ -304,33 +340,39 @@ def acessar_gopher():
 
         elif resp == options.index("Gopher Holes atualizados recentemente >"):
             while True:
-                ascii("Gopher Holes atualizados")
+                subtitulo = ascii("Gopher Holes atualizados")
                 options = []
                 gopher_list = last_gopher.show()
                 for users in gopher_list:
                     add_option(users)
                 add_option("Voltar", exit=True)
-                show_options()
 
-                resp = validar_resposta("\nR: ")
+                resp = show_options(subtitulo)
 
                 for users in options:
-                    if resp == options.index(users) and resp != 0:
+                    if resp == options.index(users) and resp != options.index("Voltar"):
                         os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, users))
 
-                if resp == 0:
+                if resp == options.index("Voltar"):
                     break
-        
+
         elif resp == options.index("Gopher Hole de outros usuários >"):
-            search_user = input("\nNome do usuário: ")
+            print("* Ctrl-C para voltar")
 
-            if search_user in quantidade_membros.lista():
-                os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+            while True:
+                try:
+                    search_user = input("\nNome do usuário: ")
 
-            else:
-                print_delay("\n- Usuário desconhecido -\n", 3)
+                except KeyboardInterrupt:
+                    break
 
-        elif resp == 0:
+                if search_user in quantidade_membros.lista():
+                    os.system("{} gopher://vaporhole.xyz/1/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+
+                else:
+                    print_delay("\n- Usuário desconhecido -\n", 3)
+
+        elif resp == options.index("Voltar"):
             break
 
 
@@ -338,18 +380,14 @@ def acessar_web():
     while True:
         global options
         options = []
-        ascii("Acessar Web")
+        subtitulo = ascii("Acessar Web")
         add_option("Pesquisar")
         add_option("Sua página Web", breakline=True)
         add_option("Páginas Web atualizadas recentemente >")
         add_option("Página Web de outros usuários >")
         add_option("Voltar", exit=True)
 
-        terminal_menu = TerminalMenu(options, skip_empty_entries=True)
-        resp = terminal_menu.show()
-
-        for i in options:
-            options[options.index(i)] = i[4:]
+        resp = show_options(subtitulo)
 
         if resp == options.index("Pesquisar"):
             os.system("{} duckduckgo.com".format(user_settings.DEFAULT_BROWSER))
@@ -360,38 +398,44 @@ def acessar_web():
 
         elif resp == options.index("Páginas Web atualizadas recentemente >"):
             while True:
-                ascii("Páginas Web atualizadas")
+                subtitulo = ascii("Páginas Web atualizadas")
                 options = []
                 web_list = last_web.show()
                 for users in web_list:
                     add_option(users)
                 add_option("Voltar", exit=True)
-                show_options()
 
-                resp = validar_resposta("\nR: ")
+                resp = show_options(subtitulo)
 
                 for users in options:
-                    if resp == options.index(users) and resp != 0:
+                    if resp == options.index(users) and resp != options.index("Voltar"):
                         os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, users))
 
-                if resp == 0:
+                if resp == options.index("Voltar"):
                     break
 
         elif resp == options.index("Página Web de outros usuários >"):
-            search_user = input("\nNome do usuário: ")
+            print("* Ctrl-C para voltar")
 
-            if search_user in quantidade_membros.lista():
-                os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+            while True:
+                try:
+                    search_user = input("\nNome do usuário: ")
 
-            else:
-                print_delay("\n- Usuário desconhecido -\n", 3)
+                except KeyboardInterrupt:
+                    break
+
+                if search_user in quantidade_membros.lista():
+                    os.system("{} https://vaporhole.xyz/~{}".format(user_settings.DEFAULT_BROWSER, search_user))
+
+                else:
+                    print_delay("\n- Usuário desconhecido -\n", 3)
 
         elif resp == options.index("Voltar"):
             break
 
 
 separador_tamanho = 60
-tempo_delay = 0.05
+tempo_delay = 0.03
 options = []
 user = getuser()
 config_path = "/home/{}/Frontend/user_settings.py".format(user)
@@ -415,8 +459,7 @@ while True:
 
     curr_time = strftime("%H:%M", localtime())
     exibir_quantidade_membros = quantidade_membros.exibir()
-    print_delay("")
-    ascii("O que deseja fazer?")
+    subtitulo = ascii("O que deseja fazer?", animation=True)
     options = []
 
     add_option("Chat de conversa")
@@ -430,7 +473,7 @@ while True:
     add_option("Sobre")
     add_option("Sair", exit=True)
 
-    resp = show_options()
+    resp = show_options(subtitulo)
 
     if resp == options.index("Chat de conversa"):
         os.system("chat")
@@ -443,7 +486,7 @@ while True:
 
     elif resp == options.index("Sobre"):
         while True:
-            ascii("Sobre")
+            subtitulo = ascii("Sobre")
             text_file = open("sobre", 'r')
             data = text_file.read()
             text_file.close()
@@ -457,16 +500,16 @@ while True:
             options = []
             add_option("Voltar", exit=True)
 
-            resp = show_options()
+            resp = show_options(subtitulo)
 
-            if resp == 0:
+            if resp == options.index("Voltar"):
                 break
 
     elif resp == options.index("Twtxt >"):
         while True:
             resp = twtxt()
 
-            if resp == 0:
+            if resp == options.index("Voltar"):
                 break
 
     elif resp == options.index("Games >"):
