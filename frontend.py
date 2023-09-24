@@ -8,7 +8,7 @@ from getpass import getuser
 from time import sleep, strftime, localtime
 from textwrap import wrap
 from colorama import Fore, Back, Style
-from dependencies.simple_term_menu.simple_term_menu import TerminalMenu
+from simple_term_menu import TerminalMenu
 import quantidade_membros
 import last_gopher
 import last_web
