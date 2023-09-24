@@ -16,6 +16,12 @@ import re
 import importlib
 
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+
 def validar_resposta(pergunta):
     while True:
         try:
@@ -40,7 +46,8 @@ def validar_resposta(pergunta):
 
 def ascii(subtitulo, animation=False):
     os.system("clear")
-    f = open('ascii', 'r')
+    ascii_path = resource_path("ascii")
+    f = open(ascii_path, 'r')
 
     if animation:
         print_delay(" {}".format(curr_time), breakline=False)
@@ -487,7 +494,8 @@ while True:
     elif resp == options.index("Sobre"):
         while True:
             subtitulo = ascii("Sobre")
-            text_file = open("sobre", 'r')
+            sobre_path = resource_path("sobre")
+            text_file = open(sobre_path, 'r')
             data = text_file.read()
             text_file.close()
 
